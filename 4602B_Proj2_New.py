@@ -155,24 +155,37 @@ axs[1].legend()
 plt.tight_layout() 
 plt.show()
 
-# Question (2) - All Data Combined
+# Question (2) - All Data Combined 
 ALL_output_NO_REST = curve_fit(mB_model, All_Redshift, All_appMAG) #, absolute_sigma=True) #, p0 = initial_guess, bounds = bounds,sigma=data1999tab2['appmagcorrerr'], method = 'dogbox') #, absolute_sigma=True)
 Omega_M0_T = ALL_output_NO_REST[0][0]
 Omega_Lambda0_T = ALL_output_NO_REST[0][1]
 
 print(f" Combined Matter density (Omega_M0): {Omega_M0_T} \nCombined Dark energy density (Omega_Lambda0): {Omega_Lambda0_T}")
 
+# Question (4)
 
+# Generate a dense array of redshift values for a smooth curve
+min_redshift = np.min(All_Redshift)
+max_redshift = np.max(All_Redshift)
+dense_redshifts = np.linspace(min_redshift, max_redshift, 1000)  # 1000 points for smoothness
+
+# Calculate the model predictions using the dense array of redshifts
+appMAG_Original = mB_model(dense_redshifts, Omega_M0_T, Omega_Lambda0_T)
+
+cases = [[0.5,0.5],[1,0],[0,1]]
+Equal_Case = mB_model(dense_redshifts, cases[0][0], cases[0][1])
+All_Matter = mB_model(dense_redshifts, cases[1][0], cases[1][1])
+ALL_DEnergy = mB_model(dense_redshifts, cases[2][0], cases[2][1])
+
+# Plot the fit(s) aginst the actual data
 fig, ax = plt.subplots()
-
-# Plotting combined data as scatter plot
 ax.scatter(All_Redshift, All_appMAG, label='Combined Data', c='blue')
 ax.errorbar(All_Redshift, All_appMAG, xerr=All_Redshift_ER, yerr=All_appMAG_ER, fmt='o', capsize=5, label='Error Bars')
-sorted_indexes = np.argsort(All_Redshift)
-sorted_redshifts = All_Redshift[sorted_indexes]
-sorted_appmag = appmag(sorted_redshifts, mod_appmag)  # Ensure this function call is correct
-ax.plot(sorted_redshifts, sorted_appmag, label='Fit for ALL data', c='green')
-ax.set_title('1999 ALL Data & Fit')
+ax.plot(dense_redshifts, appMAG_Original, label=r'Fitted Model: $\Omega_M={:.2f}, \Omega_\Lambda={:.2f}$'.format(Omega_M0_T, Omega_Lambda0_T), c='green')
+ax.plot(dense_redshifts, Equal_Case, label=r'Fitted Model: $\Omega_M={:.2f}, \Omega_\Lambda={:.2f}$'.format(cases[0][0], cases[0][1]), c='green')
+ax.plot(dense_redshifts, All_Matter, label=r'Fitted Model: $\Omega_M={:.2f}, \Omega_\Lambda={:.2f}$'.format(cases[1][0], cases[1][1]), c='green')
+ax.plot(dense_redshifts, ALL_DEnergy, label=r'Fitted Model: $\Omega_M={:.2f}, \Omega_\Lambda={:.2f}$'.format(cases[2][0], cases[2][1]), c='green')
+ax.set_title('Fitted Curve with Combined Data')
 ax.set_xlabel('Redshift')
 ax.set_ylabel('Apparent magnitude (B-band)')
 plt.legend()
@@ -214,6 +227,3 @@ Omega_M0_T_FL = ALL_output[0][0]
 Omega_Lambda0_T_FL = 1 - Omega_M0_T_FL
 
 print(f" For Flat Universe Model\nCombined Matter density (Omega_M0): {Omega_M0_T_FL} \nCombined Dark energy density (Omega_Lambda0): {Omega_Lambda0_T_FL}")
-
-
-
