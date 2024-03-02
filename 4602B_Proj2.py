@@ -109,7 +109,7 @@ ALL_DEnergy = mB_model(dense_redshifts, cases[2][0], cases[2][1])
 # Plot the fit(s) aginst the actual data
 fig, ax = plt.subplots()
 ax.scatter(All_Redshift, All_appMAG,
-           label='Combined Data',
+           label='Perlmutter et al. (1999)',
            c='blue', linewidth=0.5, zorder=5)
 ax.errorbar(All_Redshift, All_appMAG,
             xerr=All_Redshift_ER, yerr=All_appMAG_ER,
